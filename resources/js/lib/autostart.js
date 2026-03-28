@@ -146,7 +146,9 @@ async function checkLinux(WIDGET_NAME, HOME) {
 
 async function enableLinux(WIDGET_NAME, HOME) {
   const stableDir = await getStableDir();
-  const execPath = `${stableDir}/${WIDGET_NAME}`;
+  const currPath = await execPathProvider();
+  const binaryFileName = currPath.substring(currPath.lastIndexOf("/") + 1);
+  const execPath = `${stableDir}/${binaryFileName}`;
   const dir = `${HOME}/.config/autostart`;
   const file = `${dir}/${WIDGET_NAME}.desktop`;
 
@@ -196,7 +198,9 @@ async function checkWindows(WIDGET_NAME) {
 
 async function enableWindows(WIDGET_NAME) {
   const stableDir = await getStableDir();
-  const execPath = `${stableDir}\\${WIDGET_NAME}.exe`;
+  const currPath = await execPathProvider();
+  const binaryFileName = currPath.substring(currPath.lastIndexOf("\\") + 1);
+  const execPath = `${stableDir}\\${binaryFileName}`;
 
   const cmd =
     `reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run ` +
@@ -231,7 +235,9 @@ async function checkMacOS(WIDGET_NAME) {
 
 async function enableMacOS(WIDGET_NAME) {
   const stableDir = await getStableDir();
-  const execPath = `${stableDir}/${WIDGET_NAME}`;
+  const currPath = await execPathProvider();
+  const binaryFileName = currPath.substring(currPath.lastIndexOf("/") + 1);
+  const execPath = `${stableDir}/${binaryFileName}`;
 
   const cmd =
     `osascript -e 'tell application "System Events" ` +
@@ -343,7 +349,7 @@ async function execPathProvider() {
     execPath = await getExecPath();
   } catch (error) {
     Neutralino.debug.log(
-      `enableLinux failed to getExecPath: ${JSON.stringify(error)}`,
+      `failed to getExecPath: ${JSON.stringify(error)}`,
       "ERROR"
     );
     // fallback to most generic path
